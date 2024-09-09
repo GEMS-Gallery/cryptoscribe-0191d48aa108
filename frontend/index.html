@@ -1,12 +1,357 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Crypto Blog</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Premium Email Web App</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #4a69bd;
+            --secondary-color: #f1f2f6;
+            --text-color: #2f3542;
+            --hover-color: #dfe4ea;
+            --border-color: #ced6e0;
+            --icon-color: #747d8c;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+        }
+        body, html {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            height: 100%;
+            color: var(--text-color);
+            background-color: #f8f9fa;
+        }
+        .app-container {
+            display: flex;
+            height: 100vh;
+            max-width: 1400px;
+            margin: 0 auto;
+            box-shadow: 0 0 20px var(--shadow-color);
+        }
+        .sidebar {
+            width: 240px;
+            background-color: #fff;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            border-right: 1px solid var(--border-color);
+        }
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 30px;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+        }
+        .logo i {
+            margin-right: 10px;
+        }
+        .sidebar-menu {
+            list-style-type: none;
+            padding: 0;
+        }
+        .sidebar-menu li {
+            padding: 12px 15px;
+            margin-bottom: 5px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+        }
+        .sidebar-menu li:hover, .sidebar-menu li.active {
+            background-color: var(--hover-color);
+            color: var(--primary-color);
+        }
+        .sidebar-menu li i {
+            margin-right: 12px;
+            width: 20px;
+            color: var(--icon-color);
+        }
+        .sidebar-menu li:hover i, .sidebar-menu li.active i {
+            color: var(--primary-color);
+        }
+        .new-message-btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 20px;
+            transition: background-color 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .new-message-btn:hover {
+            background-color: #3c5a9a;
+        }
+        .new-message-btn i {
+            margin-right: 8px;
+        }
+        .message-list {
+            width: 350px;
+            background-color: #fff;
+            border-right: 1px solid var(--border-color);
+            overflow-y: auto;
+        }
+        .message-list-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #fff;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        .message-list-title {
+            font-size: 20px;
+            font-weight: bold;
+        }
+        .search-icon {
+            color: var(--icon-color);
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+        .search-icon:hover {
+            color: var(--primary-color);
+        }
+        .message-item {
+            padding: 15px 20px;
+            border-bottom: 1px solid var(--border-color);
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+        }
+        .message-item:hover {
+            background-color: var(--hover-color);
+        }
+        .message-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--secondary-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+        .message-details {
+            flex-grow: 1;
+        }
+        .message-sender {
+            font-weight: bold;
+            margin-bottom: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .message-time {
+            font-size: 12px;
+            color: var(--icon-color);
+        }
+        .message-subject {
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+        .message-preview {
+            color: var(--icon-color);
+            font-size: 14px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .message-view {
+            flex-grow: 1;
+            padding: 30px;
+            background-color: #fff;
+            overflow-y: auto;
+        }
+        .message-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .sender-info {
+            display: flex;
+            align-items: center;
+        }
+        .avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: var(--secondary-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-weight: bold;
+            color: var(--primary-color);
+            font-size: 20px;
+        }
+        .sender-details {
+            display: flex;
+            flex-direction: column;
+        }
+        .sender-name {
+            font-weight: bold;
+            font-size: 18px;
+        }
+        .sender-email {
+            color: var(--icon-color);
+            font-size: 14px;
+        }
+        .message-actions button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--icon-color);
+            font-size: 16px;
+            margin-left: 15px;
+            transition: color 0.3s;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .message-actions button:hover {
+            color: var(--primary-color);
+            background-color: var(--hover-color);
+        }
+        .message-content {
+            line-height: 1.6;
+        }
+        .attachments {
+            margin-top: 30px;
+        }
+        .attachment {
+            display: inline-flex;
+            align-items: center;
+            background-color: var(--secondary-color);
+            padding: 10px 15px;
+            border-radius: 5px;
+            margin-right: 10px;
+            margin-bottom: 10px;
+            transition: all 0.3s;
+        }
+        .attachment:hover {
+            background-color: var(--hover-color);
+        }
+        .attachment i {
+            margin-right: 10px;
+            color: var(--primary-color);
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <div class="sidebar">
+            <div class="logo">
+                <i class="fas fa-envelope"></i>
+                Mailbox
+            </div>
+            <ul class="sidebar-menu">
+                <li class="active"><i class="fas fa-inbox"></i>Inbox</li>
+                <li><i class="fas fa-paper-plane"></i>Sent</li>
+                <li><i class="fas fa-file-alt"></i>Drafts</li>
+                <li><i class="far fa-star"></i>Starred</li>
+                <li><i class="far fa-trash-alt"></i>Trash</li>
+            </ul>
+            <button class="new-message-btn">
+                <i class="fas fa-pen"></i>
+                New Message
+            </button>
+        </div>
+        <div class="message-list" id="messageList">
+            <div class="message-list-header">
+                <span class="message-list-title">Inbox</span>
+                <i class="fas fa-search search-icon"></i>
+            </div>
+            <!-- Message list items will be dynamically added here -->
+        </div>
+        <div class="message-view" id="messageView">
+            <!-- Selected message content will be shown here -->
+        </div>
+    </div>
+
+    <script>
+        const messages = [
+            { id: 1, sender: 'Eileen Horton', email: 'eileen@example.com', subject: 'An \'extremely credible source\'', preview: 'Hi Nathan, An \'extremely credible source\' has called my office and told me that Barack Obama\'s...', time: '12:06 PM' },
+            { id: 2, sender: 'Terrance Moreno', email: 'terrance@example.com', subject: 'All of the words in Lorem Ipsum', preview: 'Hi Nathan, All of the words in Lorem Ipsum have flirted...', time: '9:35 PM' },
+            { id: 3, sender: 'Ron Vargas', email: 'ron@example.com', subject: 'I think my strongest asset', preview: 'Hi Nathan, I think my strongest asset maybe by far is my t...', time: '8:16 AM' },
+            { id: 4, sender: 'Luke Cook', email: 'luke@example.com', subject: 'Despite the constant negative ipsum covfefe', preview: 'Dear Nathan, Despite the constant negative ipsum covfefe...', time: 'Feb 3' },
+        ];
+
+        function renderMessageList() {
+            const messageList = document.getElementById('messageList');
+            const listContent = messages.map(message => `
+                <div class="message-item" onclick="viewMessage(${message.id})">
+                    <div class="message-avatar">${message.sender.charAt(0)}</div>
+                    <div class="message-details">
+                        <div class="message-sender">
+                            ${message.sender}
+                            <span class="message-time">${message.time}</span>
+                        </div>
+                        <div class="message-subject">${message.subject}</div>
+                        <div class="message-preview">${message.preview}</div>
+                    </div>
+                </div>
+            `).join('');
+            messageList.innerHTML += listContent;
+        }
+
+        function viewMessage(id) {
+            const message = messages.find(m => m.id === id);
+            const messageView = document.getElementById('messageView');
+            messageView.innerHTML = `
+                <div class="message-header">
+                    <div class="sender-info">
+                        <div class="avatar">${message.sender.charAt(0)}</div>
+                        <div class="sender-details">
+                            <span class="sender-name">${message.sender}</span>
+                            <span class="sender-email">${message.email}</span>
+                        </div>
+                    </div>
+                    <div class="message-actions">
+                        <button title="Reply"><i class="fas fa-reply"></i></button>
+                        <button title="Reply All"><i class="fas fa-reply-all"></i></button>
+                        <button title="Forward"><i class="fas fa-share"></i></button>
+                        <button title="Delete"><i class="far fa-trash-alt"></i></button>
+                        <button title="More Options"><i class="fas fa-ellipsis-v"></i></button>
+                    </div>
+                </div>
+                <h2>${message.subject}</h2>
+                <div class="message-content">
+                    <p>${message.preview}</p>
+                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam auctor, nunc id aliquam tincidunt, nisl nisl aliquam nisl, nec aliquam nisl nisl sit amet nisl. Sed euismod, nunc id aliquam tincidunt, nisl nisl aliquam nisl, nec aliquam nisl nisl sit amet nisl.</p>
+                </div>
+                <div class="attachments">
+                    <div class="attachment">
+                        <i class="far fa-file-word"></i> Prospectus.doc
+                    </div>
+                    <div class="attachment">
+                        <i class="far fa-file-excel"></i> Financial_Report.xls
+                    </div>
+                </div>
+            `;
+        }
+
+        renderMessageList();
+    </script>
+</body>
 </html>
