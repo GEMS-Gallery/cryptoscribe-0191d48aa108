@@ -32,11 +32,15 @@
         }
         .sidebar {
             width: 240px;
+            min-width: 200px;
+            max-width: 400px;
             background-color: #fff;
             padding: 20px;
             display: flex;
             flex-direction: column;
             border-right: 1px solid var(--border-color);
+            resize: horizontal;
+            overflow: auto;
         }
         .logo {
             font-size: 24px;
@@ -96,9 +100,12 @@
         }
         .message-list {
             width: 350px;
+            min-width: 250px;
+            max-width: 500px;
             background-color: #fff;
             border-right: 1px solid var(--border-color);
             overflow-y: auto;
+            resize: horizontal;
         }
         .message-list-header {
             padding: 20px;
@@ -256,11 +263,16 @@
             margin-right: 10px;
             color: var(--primary-color);
         }
+        .resize-handle {
+            width: 5px;
+            background-color: var(--border-color);
+            cursor: col-resize;
+        }
     </style>
 </head>
 <body>
     <div class="app-container">
-        <div class="sidebar">
+        <div class="sidebar" id="sidebar">
             <div class="logo">
                 <i class="fas fa-envelope"></i>
                 Mailbox
@@ -277,6 +289,7 @@
                 New Message
             </button>
         </div>
+        <div class="resize-handle" id="sidebar-resize"></div>
         <div class="message-list" id="messageList">
             <div class="message-list-header">
                 <span class="message-list-title">Inbox</span>
@@ -284,6 +297,7 @@
             </div>
             <!-- Message list items will be dynamically added here -->
         </div>
+        <div class="resize-handle" id="message-list-resize"></div>
         <div class="message-view" id="messageView">
             <!-- Selected message content will be shown here -->
         </div>
@@ -352,6 +366,35 @@
         }
 
         renderMessageList();
+
+        // Resizable functionality
+        function makeResizable(element, resizeHandle, minWidth, maxWidth) {
+            let startX, startWidth;
+
+            function startResize(e) {
+                startX = e.clientX;
+                startWidth = parseInt(document.defaultView.getComputedStyle(element).width, 10);
+                document.documentElement.addEventListener('mousemove', resize);
+                document.documentElement.addEventListener('mouseup', stopResize);
+            }
+
+            function resize(e) {
+                const width = startWidth + e.clientX - startX;
+                if (width > minWidth && width < maxWidth) {
+                    element.style.width = `${width}px`;
+                }
+            }
+
+            function stopResize() {
+                document.documentElement.removeEventListener('mousemove', resize);
+                document.documentElement.removeEventListener('mouseup', stopResize);
+            }
+
+            resizeHandle.addEventListener('mousedown', startResize);
+        }
+
+        makeResizable(document.getElementById('sidebar'), document.getElementById('sidebar-resize'), 200, 400);
+        makeResizable(document.getElementById('messageList'), document.getElementById('message-list-resize'), 250, 500);
     </script>
 </body>
 </html>
